@@ -75,13 +75,19 @@
   </div>
 
   <script>
-    // Get the necessary elements
-    let noteInput = document.getElementById('note-input');
-    let addButton = document.getElementById('add-button');
-    let noteList = document.getElementById('note-list');
-
     // Array to store the notes
     let notes = [];
+
+    // Check if there are any saved notes in local storage
+    if (localStorage.getItem('notes')) {
+      // Retrieve the notes from local storage
+      notes = JSON.parse(localStorage.getItem('notes'));
+    }
+
+    // Function to save notes to local storage
+    function saveNotes() {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
 
     // Function to render the notes
     function renderNotes() {
@@ -103,7 +109,7 @@
         `;
 
         // Add event listener for the edit button
-        listItem.querySelector('.edit-button').addEventListener('click', function() {
+        listItem.querySelector('.edit-button').addEventListener('click', function () {
           // Replace the note input value with the selected note content
           noteInput.value = note.content;
           // Remove the selected note from the notes array
@@ -113,7 +119,7 @@
         });
 
         // Add event listener for the delete button
-        listItem.querySelector('.delete-button').addEventListener('click', function() {
+        listItem.querySelector('.delete-button').addEventListener('click', function () {
           // Remove the selected note from the notes array
           notes.splice(i, 1);
           // Re-render the notes
@@ -123,10 +129,18 @@
         // Append the list item to the note list
         noteList.appendChild(listItem);
       }
+
+      // Save the notes to local storage
+      saveNotes();
     }
 
+    // Get the necessary elements
+    let noteInput = document.getElementById('note-input');
+    let addButton = document.getElementById('add-button');
+    let noteList = document.getElementById('note-list');
+
     // Event listener for the add button
-    addButton.addEventListener('click', function() {
+    addButton.addEventListener('click', function () {
       let noteContent = noteInput.value;
 
       if (noteContent.trim() !== '') {
@@ -145,6 +159,9 @@
         renderNotes();
       }
     });
+
+    // Render the initial notes
+    renderNotes();
   </script>
 </body>
 </html>
