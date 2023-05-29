@@ -9,10 +9,12 @@
       margin: 0;
       padding: 0;
     }
+
     h1 {
       text-align: center;
       margin: 20px 0;
     }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
@@ -20,13 +22,20 @@
       background-color: white;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    #note-input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
+
+    .input-group {
+      display: flex;
       margin-bottom: 10px;
     }
-    #add-button {
+
+    .input-group input,
+    .input-group textarea {
+      flex-grow: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .input-group button {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #4CAF50;
@@ -35,26 +44,39 @@
       cursor: pointer;
       border-radius: 5px;
     }
+
     #note-list {
       list-style-type: none;
       padding: 0;
     }
+
     li {
       padding: 10px;
       border-bottom: 1px solid #ccc;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
     }
+
     li:last-child {
       border-bottom: none;
     }
-    .note-content {
-      flex-grow: 1;
+
+    .note-heading {
+      font-size: 18px;
+      font-weight: bold;
     }
+
+    .note-content {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
     .note-buttons {
       display: flex;
-      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 10px;
     }
+
     .note-buttons button {
       padding: 5px 10px;
       font-size: 14px;
@@ -64,14 +86,32 @@
       cursor: pointer;
       border-radius: 5px;
     }
+
+    .note-buttons button:first-child {
+      margin-right: 5px;
+    }
+
+    .note-buttons button:last-child {
+      background-color: #f44336;
+    }
   </style>
 </head>
 <body>
   <h1>Note Taking App</h1>
   <div class="container">
-    <input type="text" id="note-input" placeholder="Enter your note">
-    <button id="add-button">Add Note..</button>
+    <div class="input-group">
+      <input type="text" id="note-heading" placeholder="Enter note heading">
+    </div>
+    <div class="input-group">
+      <textarea id="note-content" placeholder="Enter note content"></textarea>
+    </div>
+    <div class="input-group">
+      <button id="add-button">Add Note</button>
+    </div>
     <ul id="note-list"></ul>
+    <div class="input-group">
+      <button id="save-button">Save Notes</button>
+    </div>
   </div>
 
   <script>
@@ -98,10 +138,11 @@
       for (let i = 0; i < notes.length; i++) {
         let note = notes[i];
 
-        // Create a list item with the note content
+        // Create a list item with the note heading and content
         let listItem = document.createElement('li');
         listItem.innerHTML = `
-          <div class="note-content">${note.content}</div>
+          <h3 class="note-heading">${note.heading}</h3>
+          <p class="note-content">${note.content}</p>
           <div class="note-buttons">
             <button class="edit-button">Edit</button>
             <button class="delete-button">Delete</button>
@@ -110,8 +151,9 @@
 
         // Add event listener for the edit button
         listItem.querySelector('.edit-button').addEventListener('click', function () {
-          // Replace the note input value with the selected note content
-          noteInput.value = note.content;
+          // Replace the note input values with the selected note heading and content
+          noteHeading.value = note.heading;
+          noteContent.value = note.content;
           // Remove the selected note from the notes array
           notes.splice(i, 1);
           // Re-render the notes
@@ -135,29 +177,57 @@
     }
 
     // Get the necessary elements
-    let noteInput = document.getElementById('note-input');
+    let noteHeading = document.getElementById('note-heading');
+    let noteContent = document.getElementById('note-content');
     let addButton = document.getElementById('add-button');
     let noteList = document.getElementById('note-list');
+    let saveButton = document.getElementById('save-button');
 
     // Event listener for the add button
     addButton.addEventListener('click', function () {
-      let noteContent = noteInput.value;
+      let heading = noteHeading.value;
+      let content = noteContent.value;
 
-      if (noteContent.trim() !== '') {
+      if (heading.trim() !== '' && content.trim() !== '') {
         // Create a new note object
         let note = {
-          content: noteContent
+          heading: heading,
+          content: content
         };
 
         // Add the note to the notes array
         notes.push(note);
 
         // Clear the note input
-        noteInput.value = '';
+        noteHeading.value = '';
+        noteContent.value = '';
 
         // Re-render the notes
         renderNotes();
       }
+    });
+
+    // Event listener for the save button
+    saveButton.addEventListener('click', function () {
+      // Perform POST operation here (e.g., send data to a server)
+      // You can access the notes array and send it as JSON data
+
+      // For example, if using fetch API to send data to a server:
+      fetch('http://example.com/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(notes)
+      })
+        .then(response => {
+          // Handle the response here
+          console.log('Notes saved successfully!');
+        })
+        .catch(error => {
+          // Handle errors here
+          console.error('Error saving notes:', error);
+        });
     });
 
     // Render the initial notes
