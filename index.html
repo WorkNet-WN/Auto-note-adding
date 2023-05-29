@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Note Taking App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    #note-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    #add-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #note-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+    }
+    li:last-child {
+      border-bottom: none;
+    }
+    .note-content {
+      flex-grow: 1;
+    }
+    .note-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .note-buttons button {
+      padding: 5px 10px;
+      font-size: 14px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Note Taking App</h1>
+  <div class="container">
+    <input type="text" id="note-input" placeholder="Enter your note">
+    <button id="add-button">Add Note</button>
+    <ul id="note-list"></ul>
+  </div>
+
+  <script>
+    // Get the necessary elements
+    let noteInput = document.getElementById('note-input');
+    let addButton = document.getElementById('add-button');
+    let noteList = document.getElementById('note-list');
+
+    // Array to store the notes
+    let notes = [];
+
+    // Function to render the notes
+    function renderNotes() {
+      // Clear the note list
+      noteList.innerHTML = '';
+
+      // Loop through the notes and create list items
+      for (let i = 0; i < notes.length; i++) {
+        let note = notes[i];
+
+        // Create a list item with the note content
+        let listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <div class="note-content">${note.content}</div>
+          <div class="note-buttons">
+            <button class="edit-button">Edit</button>
+            <button class="delete-button">Delete</button>
+          </div>
+        `;
+
+        // Add event listener for the edit button
+        listItem.querySelector('.edit-button').addEventListener('click', function() {
+          // Replace the note input value with the selected note content
+          noteInput.value = note.content;
+          // Remove the selected note from the notes array
+          notes.splice(i, 1);
+          // Re-render the notes
+          renderNotes();
+        });
+
+        // Add event listener for the delete button
+        listItem.querySelector('.delete-button').addEventListener('click', function() {
+          // Remove the selected note from the notes array
+          notes.splice(i, 1);
+          // Re-render the notes
+          renderNotes();
+        });
+
+        // Append the list item to the note list
+        noteList.appendChild(listItem);
+      }
+    }
+
+    // Event listener for the add button
+    addButton.addEventListener('click', function() {
+      let noteContent = noteInput.value;
+
+      if (noteContent.trim() !== '') {
+        // Create a new note object
+        let note = {
+          content: noteContent
+        };
+
+        // Add the note to the notes array
+        notes.push(note);
+
+        // Clear the note input
+        noteInput.value = '';
+
+        // Re-render the notes
+        renderNotes();
+      }
+    });
+  </script>
+</body>
+</html>
